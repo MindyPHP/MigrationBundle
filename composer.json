@@ -1,0 +1,28 @@
+{
+    "name": "mindy/migration-bundle",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Mindy\\Bundle\\MigrationBundle\\": ""
+        },
+        "exclude-from-classmap": [
+            "./Tests/"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Mindy\\Bundle\\MigrationBundle\\Tests\\": "./Tests/"
+        }
+    },
+    "require": {
+    },
+    "authors": [
+        {
+            "name": "Maxim Falaleev",
+            "email": "max@studio107.ru",
+            "homepage": "http://studio107.ru"
+        }
+    ],
+    "require-dev": {
+    }
+}

@@ -1,0 +1,3 @@
+services:
+    mindy.bundle.orm.migration_factory:
+        class: Mindy\Bundle\MigrationBundle\MigrationManager\MigrationFactory
