@@ -1,3 +1,9 @@
 services:
-    mindy.bundle.orm.migration_factory:
-        class: Mindy\Bundle\MigrationBundle\MigrationManager\MigrationFactory
+    _defaults:
+        autowire: true
+        autoconfigure: true
+        public: false
+
+    Mindy\Bundle\MigrationBundle\:
+        resource: '../../*'
+        exclude: '../../{Tests}'

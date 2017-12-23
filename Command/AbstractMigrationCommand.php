@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /*
  * This file is part of Mindy Framework.
  * (c) 2017 Maxim Falaleev
@@ -11,43 +13,51 @@
 namespace Mindy\Bundle\MigrationBundle\Command;
 
 use Doctrine\DBAL\Connection;
-use Mindy\Bundle\MigrationBundle\MigrationManager\MigrationFactory;
+use Mindy\Component\MigrationManager\MigrationFactory;
 use Mindy\Orm\ConnectionManager;
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\HttpKernel\KernelInterface;
 
-abstract class AbstractMigrationCommand extends ContainerAwareCommand
+abstract class AbstractMigrationCommand extends Command
 {
     /**
-     * @return KernelInterface
+     * @var KernelInterface
      */
-    protected function getKernel(): KernelInterface
+    protected $kernel;
+
+    /**
+     * @var ConnectionManager
+     */
+    protected $connectionManager;
+
+    /**
+     * @var MigrationFactory
+     */
+    protected $migrationFactory;
+
+    /**
+     * AbstractMigrationCommand constructor.
+     *
+     * @param KernelInterface $kernel
+     * @param ConnectionManager $connectionManager
+     * @param MigrationFactory $migrationFactory
+     */
+    public function __construct(KernelInterface $kernel, ConnectionManager $connectionManager, MigrationFactory $migrationFactory)
     {
-        return $this->getContainer()->get('kernel');
+        $this->kernel = $kernel;
+        $this->connectionManager = $connectionManager;
+        $this->migrationFactory = $migrationFactory;
+
+        parent::__construct();
     }
 
     /**
      * @param $name
+     *
      * @return Connection
      */
     protected function getConnection($name): Connection
     {
-        return $this->getConnectionManager()->getConnection($name);
-    }
-
-    /**
-     * @return ConnectionManager
-     */
-    protected function getConnectionManager(): ConnectionManager
-    {
-        return $this->getContainer()->get('orm.connection_manager');
-    }
-
-    /**
-     * @return MigrationFactory
-     */
-    protected function getMigrationFactory(): MigrationFactory
-    {
-        return $this->getContainer()->get('mindy.bundle.orm.migration_factory');
+        return $this->connectionManager->getConnection($name);
     }
 }
