@@ -24,7 +24,7 @@ class GenerateCommand extends AbstractMigrationCommand
         $this
             ->setName('orm:migration:generate')
             ->setDescription('Generate a blank migration class.')
-            ->addArgument('bundle', InputArgument::REQUIRED, 'Bundle name')
+            ->addArgument('bundle', InputArgument::OPTIONAL, 'Bundle name')
             ->addOption('template', null, InputOption::VALUE_OPTIONAL, 'Migration template.')
             ->addOption('editor-cmd', null, InputOption::VALUE_OPTIONAL, 'Open file with this command upon creation.')
             ->addOption('connection', 'c', InputOption::VALUE_OPTIONAL, 'Connection name', 'default')
@@ -45,18 +45,31 @@ EOT
         $connectionName = $input->getOption('connection');
         $connection = $this->getConnection($connectionName);
 
-        $bundle = $this->kernel->getBundle($input->getArgument('bundle'));
-
         $template = null;
         if ($templatePath = $input->getOption('template')) {
             $template = file_get_contents($templatePath);
         }
-        $path = $this->migrationFactory->createManager(
-            $connection,
-            $bundle->getName(),
-            $bundle->getPath(),
-            $bundle->getNamespace()
-        )->generateMigration($template);
+
+        $bundleName = $input->getArgument('bundle');
+        if (false === empty($bundleName)) {
+            $bundle = $this->kernel->getBundle($bundleName);
+
+            $path = $this->migrationFactory->createManager(
+                $connection,
+                $bundle->getName(),
+                $bundle->getPath(),
+                $bundle->getNamespace()
+            )->generateMigration($template);
+        } else {
+            $kernelClass = get_class($this->kernel);
+            $kernelNamespace = substr($kernelClass, 0, strrpos($kernelClass, '\\'));
+            $path = $this->migrationFactory->createManager(
+                $connection,
+                $this->kernel->getName(),
+                $this->kernel->getRootDir(),
+                $kernelNamespace
+            )->generateMigration($template);
+        }
 
         $output->writeln(sprintf(
             'Generated new migration class to "<info>%s</info>"',

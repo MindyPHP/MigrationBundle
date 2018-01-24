@@ -10,12 +10,25 @@
 
 namespace Mindy\Bundle\MigrationBundle\Tests;
 
+use Mindy\Bundle\MigrationBundle\Tests\TestBundle\TestBundle;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\HttpKernel\Bundle\BundleInterface;
 use Symfony\Component\HttpKernel\Kernel;
 
 class TestKernel extends Kernel
 {
+    /**
+     * Returns an array of bundles to register.
+     *
+     * @return BundleInterface[] An array of bundle instances
+     */
+    public function registerBundles()
+    {
+        return [
+            new TestBundle()
+        ];
+    }
+
     public function getProjectDir()
     {
         return __DIR__;
@@ -29,18 +42,6 @@ class TestKernel extends Kernel
     public function getLogDir()
     {
         return __DIR__.'/var/logs';
-    }
-
-    /**
-     * Returns an array of bundles to register.
-     *
-     * @return BundleInterface[] An array of bundle instances
-     */
-    public function registerBundles()
-    {
-        return [
-            new TestBundle()
-        ];
     }
 
     /**

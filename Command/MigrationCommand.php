@@ -69,6 +69,28 @@ class MigrationCommand extends AbstractMigrationCommand
                 $manager->doMigrate($version, $dryRun);
             }
         }
+
+        /** @var BundleInterface $bundle */
+        $migrationPath = sprintf('%s/Migrations', $this->kernel->getRootDir());
+        if (is_dir($migrationPath)) {
+            $output->writeln(sprintf('<info>Kernel %s</info>', $this->kernel->getName()));
+            $kernelClass = get_class($this->kernel);
+            $kernelNamespace = substr($kernelClass, 0, strrpos($kernelClass, '\\'));
+            $manager = $this->migrationFactory->createManager(
+                $connection,
+                $this->kernel->getName(),
+                $this->kernel->getRootDir(),
+                $kernelNamespace
+            );
+
+            $this->warningIfHasUnavailableMigrations($manager->getConfiguration(), $output);
+
+            if ($writeSql) {
+                $manager->writeSql($version, $writeSql);
+            } else {
+                $manager->doMigrate($version, $dryRun);
+            }
+        }
     }
 
     /**

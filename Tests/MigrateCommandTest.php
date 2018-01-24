@@ -3,8 +3,7 @@
 declare(strict_types=1);
 
 /*
- * This file is part of Mindy Framework.
- * (c) 2017 Maxim Falaleev
+ * Studio 107 (c) 2018 Maxim Falaleev
  *
  * For the full copyright and license information, please view the LICENSE
  * file that was distributed with this source code.
@@ -19,6 +18,8 @@ use Mindy\Orm\ConnectionManager;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Finder\Finder;
 
 class MigrateCommandTest extends KernelTestCase
 {
@@ -35,17 +36,24 @@ class MigrateCommandTest extends KernelTestCase
     protected function setUp()
     {
         $this->connectionManager = new ConnectionManager([
-            'connections' => [
-                'default' => ['url' => 'sqlite:///:memory:']
-            ]
+            'default' => ['url' => 'sqlite:///:memory:'],
         ]);
 
         $this->migrationFactory = new MigrationFactory();
     }
 
-    protected static function createKernel(array $options = array())
+    protected static function createKernel(array $options = [])
     {
         return new TestKernel('dev', true);
+    }
+
+    protected function tearDown()
+    {
+        (new Filesystem())->remove([
+            __DIR__.'/TestBundle/Migrations',
+            __DIR__.'/Migrations',
+            __DIR__.'/var'
+        ]);
     }
 
     protected function getApp()
@@ -102,9 +110,15 @@ class MigrateCommandTest extends KernelTestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([
             'command' => $command->getName(),
-            'bundle' => 'TestBundle'
+            'bundle' => 'TestBundle',
         ]);
+        $this->assertContains('Generated new migration class to', $commandTester->getDisplay(true));
+        $this->assertCount(1, Finder::create()->files()->in(__DIR__.'/TestBundle/Migrations'));
 
-        $this->assertContains('Generated new migration class to', $commandTester->getDisplay());
+        $commandTester->execute([
+            'command' => $command->getName(),
+        ]);
+        $this->assertContains('Generated new migration class to', $commandTester->getDisplay(true));
+        $this->assertCount(1, Finder::create()->files()->in(__DIR__.'/Migrations'));
     }
 }

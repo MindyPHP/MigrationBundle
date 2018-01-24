@@ -8,7 +8,7 @@
  * file that was distributed with this source code.
  */
 
-namespace Mindy\Bundle\MigrationBundle\Tests;
+namespace Mindy\Bundle\MigrationBundle\Tests\TestBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
