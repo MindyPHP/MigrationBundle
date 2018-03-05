@@ -78,7 +78,7 @@ class MigrationCommand extends AbstractMigrationCommand
             $kernelNamespace = substr($kernelClass, 0, strrpos($kernelClass, '\\'));
             $manager = $this->migrationFactory->createManager(
                 $connection,
-                $this->kernel->getName(),
+                '',
                 $this->kernel->getRootDir(),
                 $kernelNamespace
             );
