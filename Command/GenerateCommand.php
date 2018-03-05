@@ -65,7 +65,7 @@ EOT
             $kernelNamespace = substr($kernelClass, 0, strrpos($kernelClass, '\\'));
             $path = $this->migrationFactory->createManager(
                 $connection,
-                $this->kernel->getName(),
+                '',
                 $this->kernel->getRootDir(),
                 $kernelNamespace
             )->generateMigration($template);
